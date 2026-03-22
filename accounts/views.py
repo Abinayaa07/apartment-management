@@ -1,4 +1,5 @@
 from datetime import timedelta
+import json
 
 from django.shortcuts import render
 
@@ -10,16 +11,38 @@ from django.db.models import Count, Sum
 from django.db.models.functions import TruncMonth
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 from core.notifications import (
     send_login_notification,
     send_registration_notification,
     send_user_notification,
 )
+from .chatbot import get_faq_answer
 
 
 def home(request):
     return render(request, "accounts/home.html")
+
+
+@csrf_exempt
+@require_POST
+def faq_chat(request):
+    try:
+        payload = json.loads(request.body.decode("utf-8"))
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        return JsonResponse(
+            {
+                "answer": "I could not read that question. Please try again.",
+                "matched": False,
+            },
+            status=400,
+        )
+
+    result = get_faq_answer(payload.get("message", ""))
+    return JsonResponse(result)
 
 
 def register(request):

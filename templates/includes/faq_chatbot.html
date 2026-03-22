@@ -1,0 +1,224 @@
+<style>
+    .faqbot-launcher {
+        position: fixed;
+        right: 1.25rem;
+        bottom: 1.25rem;
+        width: 58px;
+        height: 58px;
+        border: none;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #0f766e, #1d4ed8);
+        color: #fff;
+        box-shadow: 0 18px 38px rgba(15, 23, 42, 0.22);
+        z-index: 1080;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.45rem;
+    }
+
+    .faqbot-panel {
+        position: fixed;
+        right: 1.25rem;
+        bottom: 5.4rem;
+        width: min(360px, calc(100vw - 1.5rem));
+        border-radius: 1.2rem;
+        overflow: hidden;
+        background: #fffdf9;
+        border: 1px solid rgba(222, 214, 200, 0.95);
+        box-shadow: 0 24px 54px rgba(15, 23, 42, 0.18);
+        z-index: 1080;
+        display: none;
+    }
+
+    .faqbot-panel.is-open {
+        display: block;
+    }
+
+    .faqbot-header {
+        padding: 1rem 1rem 0.85rem;
+        background: linear-gradient(135deg, #172033, #243b67);
+        color: #f8fafc;
+    }
+
+    .faqbot-header strong {
+        display: block;
+        font-size: 1rem;
+    }
+
+    .faqbot-header span {
+        display: block;
+        font-size: 0.87rem;
+        opacity: 0.8;
+        margin-top: 0.25rem;
+    }
+
+    .faqbot-body {
+        padding: 0.95rem;
+        display: grid;
+        gap: 0.8rem;
+    }
+
+    .faqbot-messages {
+        max-height: 320px;
+        overflow-y: auto;
+        display: grid;
+        gap: 0.75rem;
+        padding-right: 0.2rem;
+    }
+
+    .faqbot-bubble {
+        border-radius: 1rem;
+        padding: 0.75rem 0.85rem;
+        font-size: 0.93rem;
+        line-height: 1.55;
+    }
+
+    .faqbot-bubble.bot {
+        background: #f4efe6;
+        color: #334155;
+    }
+
+    .faqbot-bubble.user {
+        background: #e0f2fe;
+        color: #0f172a;
+        margin-left: 2rem;
+    }
+
+    .faqbot-suggestions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .faqbot-suggestion {
+        border: 1px solid #d6d3d1;
+        border-radius: 999px;
+        background: #fff;
+        color: #374151;
+        font-size: 0.84rem;
+        padding: 0.42rem 0.75rem;
+    }
+
+    .faqbot-form {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.6rem;
+    }
+
+    .faqbot-input {
+        width: 100%;
+        border: 1px solid #d6d3d1;
+        border-radius: 999px;
+        padding: 0.78rem 0.95rem;
+        background: #fff;
+        color: #111827;
+    }
+
+    .faqbot-send {
+        border: none;
+        border-radius: 999px;
+        padding: 0.78rem 1rem;
+        background: #111827;
+        color: #fff;
+        font-weight: 600;
+    }
+</style>
+
+<button type="button" class="faqbot-launcher" id="faqbot-launcher" aria-label="Open FAQ chatbot">
+    💬
+</button>
+
+<section class="faqbot-panel" id="faqbot-panel" aria-live="polite">
+    <div class="faqbot-header">
+        <strong>AMS Help Assistant</strong>
+        <span>Ask about registration, dues, tickets, notices, visitors, and roles.</span>
+    </div>
+    <div class="faqbot-body">
+        <div class="faqbot-messages" id="faqbot-messages">
+            <div class="faqbot-bubble bot">
+                Hello. I can help explain how the apartment system works. Ask me about registration, approvals,
+                tickets, payments, notices, visitors, or roles.
+            </div>
+        </div>
+        <div class="faqbot-suggestions" id="faqbot-suggestions">
+            <button type="button" class="faqbot-suggestion">How do I register as a resident?</button>
+            <button type="button" class="faqbot-suggestion">How do I pay maintenance dues?</button>
+            <button type="button" class="faqbot-suggestion">How do I raise a maintenance ticket?</button>
+        </div>
+        <form class="faqbot-form" id="faqbot-form">
+            <input
+                type="text"
+                id="faqbot-input"
+                class="faqbot-input"
+                placeholder="Ask your apartment question..."
+                autocomplete="off"
+            >
+            <button type="submit" class="faqbot-send">Send</button>
+        </form>
+    </div>
+</section>
+
+<script>
+    (function () {
+        const launcher = document.getElementById("faqbot-launcher");
+        const panel = document.getElementById("faqbot-panel");
+        const form = document.getElementById("faqbot-form");
+        const input = document.getElementById("faqbot-input");
+        const messages = document.getElementById("faqbot-messages");
+        const suggestions = document.getElementById("faqbot-suggestions");
+
+        if (!launcher || !panel || !form || !input || !messages || !suggestions) {
+            return;
+        }
+
+        function appendBubble(text, type) {
+            const bubble = document.createElement("div");
+            bubble.className = `faqbot-bubble ${type}`;
+            bubble.textContent = text;
+            messages.appendChild(bubble);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        launcher.addEventListener("click", function () {
+            panel.classList.toggle("is-open");
+            if (panel.classList.contains("is-open")) {
+                input.focus();
+            }
+        });
+
+        suggestions.addEventListener("click", function (event) {
+            if (!event.target.classList.contains("faqbot-suggestion")) {
+                return;
+            }
+            input.value = event.target.textContent.trim();
+            form.requestSubmit();
+        });
+
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            const question = input.value.trim();
+            if (!question) {
+                return;
+            }
+
+            appendBubble(question, "user");
+            input.value = "";
+
+            try {
+                const response = await fetch("/faq-chat/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ message: question })
+                });
+
+                const data = await response.json();
+                appendBubble(data.answer || "I could not answer that right now.", "bot");
+            } catch (error) {
+                appendBubble("I could not connect right now. Please try again in a moment.", "bot");
+            }
+        });
+    }());
+</script>
