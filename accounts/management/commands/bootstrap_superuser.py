@@ -28,6 +28,7 @@ class Command(BaseCommand):
             defaults={
                 "email": email,
                 "role": "admin",
+                "phone": "0000000000",
                 "is_approved": True,
                 "is_staff": True,
                 "is_superuser": True,
@@ -38,6 +39,8 @@ class Command(BaseCommand):
             user.email = email
         if user.role != "admin":
             user.role = "admin"
+        if not user.phone:
+            user.phone = "0000000000"
         if not user.is_approved:
             user.is_approved = True
         if not user.is_staff:
