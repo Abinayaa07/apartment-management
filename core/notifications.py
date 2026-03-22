@@ -9,14 +9,16 @@ def send_user_notification(user, subject, message, html_template=None, context=N
     if not user.email:
         return False
 
-    html_message = None
-    if html_template:
-        html_message = render_to_string(html_template, context or {})
-
     try:
+        html_message = None
+        if html_template:
+            html_message = render_to_string(html_template, context or {})
         send_user_notification_task.delay(user.email, subject, message, html_message)
     except Exception:
-        send_user_notification_task.run(user.email, subject, message, html_message)
+        try:
+            send_user_notification_task.run(user.email, subject, message, html_message)
+        except Exception:
+            return False
     return True
 
 
@@ -25,14 +27,16 @@ def send_bulk_notification(emails, subject, message, html_template=None, context
     if not recipients:
         return 0
 
-    html_message = None
-    if html_template:
-        html_message = render_to_string(html_template, context or {})
-
     try:
+        html_message = None
+        if html_template:
+            html_message = render_to_string(html_template, context or {})
         send_bulk_notification_task.delay(recipients, subject, message, html_message)
     except Exception:
-        send_bulk_notification_task.run(recipients, subject, message, html_message)
+        try:
+            send_bulk_notification_task.run(recipients, subject, message, html_message)
+        except Exception:
+            return 0
     return len(recipients)
 
 
