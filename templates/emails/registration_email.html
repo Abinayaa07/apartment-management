@@ -1,0 +1,23 @@
+{% extends "emails/base_email.html" %}
+
+{% block body %}
+<p style="margin:0 0 18px;">Hello {{ user_name }},</p>
+<p style="margin:0 0 18px; line-height:1.7;">Welcome to AMS Apartment. Your account has been successfully created.</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #e3dac9; border-radius:16px; overflow:hidden; margin:0 0 20px;">
+    <tr><td style="padding:14px 18px; background:#f8f4ec; font-weight:700;">Account Details</td></tr>
+    <tr><td style="padding:18px; line-height:1.9;">
+        <strong>Username:</strong> {{ username }}<br>
+        <strong>Email:</strong> {{ email }}<br>
+        <strong>Registered On:</strong> {{ registered_date }}
+    </td></tr>
+</table>
+
+<p style="margin:0 0 22px; line-height:1.7;">You can now log in and start using our services once your account is active.</p>
+
+<p style="margin:0 0 24px;">
+    <a href="{{ action_url }}" style="display:inline-block; padding:12px 22px; background:#0f766e; color:#ffffff; text-decoration:none; border-radius:999px; font-weight:700;">{{ action_label }}</a>
+</p>
+
+<p style="margin:0; line-height:1.7;">If you did not register for this account, please contact support immediately.</p>
+{% endblock %}

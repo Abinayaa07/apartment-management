@@ -1,0 +1,41 @@
+{% extends "accounts/dashboard_base.html" %}
+
+{% block title %}Resident Dashboard{% endblock %}
+{% block sidebar_title %}Resident Portal{% endblock %}
+{% block sidebar_copy %}Track your tickets, dues, and community updates from one organized home screen.{% endblock %}
+{% block eyebrow %}Personal Workspace{% endblock %}
+{% block hero_title %}Resident Dashboard{% endblock %}
+{% block hero_copy %}Submit issues, review dues, and stay informed without digging through separate pages.{% endblock %}
+
+{% block sidebar_links %}
+<a href="/payments/dues/">
+    Pay Maintenance Dues
+    <small>Open your pending dues and payment actions.</small>
+</a>
+<a href="/tickets/create/">
+    Create Ticket
+    <small>Report a maintenance issue.</small>
+</a>
+<a href="/tickets/my/">
+    My Tickets
+    <small>Track progress on submitted requests.</small>
+</a>
+<a href="/payments/history/">
+    Payment History
+    <small>Review completed payments and receipts.</small>
+</a>
+<a href="/notices/list/">
+    Notices
+    <small>Read community and maintenance updates.</small>
+</a>
+{% endblock %}
+
+{% block side_panel_title %}Resident Checklist{% endblock %}
+{% block side_panel_copy %}A few quick actions keep your apartment account in good shape.{% endblock %}
+{% block side_panel_content %}
+<ul class="bullet-list">
+    <li>Clear pending dues before the next maintenance cycle closes.</li>
+    <li>Attach clear details when creating tickets to speed up resolution.</li>
+    <li>Review notices regularly for water, lift, or society schedule changes.</li>
+</ul>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "base/page_base.html" %}
+
+{% block title %}Update Ticket{% endblock %}
+{% block kicker %}Tickets{% endblock %}
+{% block heading %}Update Ticket{% endblock %}
+{% block intro %}Change the progress state for this maintenance request.{% endblock %}
+{% block top_actions %}
+<a href="/tickets/all/" class="btn btn-outline-secondary">Back to Tickets</a>
+{% endblock %}
+
+{% block content %}
+<form method="POST" class="d-grid gap-3" style="max-width: 420px;">
+    {% csrf_token %}
+    <select name="status" class="form-select">
+        <option value="open">Open</option>
+        <option value="assigned">Assigned</option>
+        <option value="in_progress">In Progress</option>
+        <option value="closed">Closed</option>
+    </select>
+    <button class="btn btn-success">Update</button>
+</form>
+{% endblock %}

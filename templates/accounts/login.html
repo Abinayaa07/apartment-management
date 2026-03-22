@@ -1,0 +1,15 @@
+{% extends "base/auth_base.html" %}
+
+{% block title %}Login{% endblock %}
+{% block heading %}Login{% endblock %}
+{% block subheading %}Enter your details to access your dashboard.{% endblock %}
+
+{% block content %}
+<form method="POST" class="d-grid gap-3">
+    {% csrf_token %}
+    <input class="form-control" name="username" placeholder="Username">
+    <input class="form-control" type="password" name="password" placeholder="Password">
+    <button class="btn btn-brand">Login</button>
+    <div class="auth-linkline">Don't have an account? <a href="/register/">Register</a></div>
+</form>
+{% endblock %}

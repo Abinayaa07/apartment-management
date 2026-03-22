@@ -1,0 +1,18 @@
+{% extends "base/page_base.html" %}
+
+{% block title %}Create Notice{% endblock %}
+{% block kicker %}Notices{% endblock %}
+{% block heading %}Create Notice{% endblock %}
+{% block intro %}Publish an announcement with optional document support for residents and staff.{% endblock %}
+{% block top_actions %}
+<a href="/notices/list/" class="btn btn-outline-dark">Notice Board</a>
+<a href="/dashboard/" class="btn btn-outline-secondary">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data" class="d-grid gap-3 content-narrow">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary">Publish Notice</button>
+</form>
+{% endblock %}

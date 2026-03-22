@@ -1,0 +1,281 @@
+{% extends "accounts/dashboard_base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block sidebar_title %}Admin Suite{% endblock %}
+{% block sidebar_copy %}Oversee residents, staff operations, visitor flow, and finance from a single control layer.{% endblock %}
+{% block eyebrow %}Executive Overview{% endblock %}
+{% block hero_title %}Admin Dashboard{% endblock %}
+{% block hero_copy %}Track society-wide activity, spot bottlenecks, and jump into operational decisions quickly.{% endblock %}
+
+{% block sidebar_links %}
+<a href="/tickets/all/">
+    Tickets
+    <small>Review all maintenance issues.</small>
+</a>
+<a href="/visitors/list/">
+    Visitors
+    <small>Inspect daily entry and exit activity.</small>
+</a>
+<a href="/notices/create/">
+    Notices
+    <small>Publish updates to the whole community.</small>
+</a>
+<a href="/payments/manage/">
+    Payments
+    <small>Monitor collections and pending dues.</small>
+</a>
+{% endblock %}
+
+{% block side_panel_title %}Admin Priorities{% endblock %}
+{% block side_panel_copy %}Use the dashboard itself for the main admin work instead of jumping to Django admin.{% endblock %}
+{% block side_panel_content %}
+<ul class="bullet-list">
+    <li>Approve new residents from the panel below.</li>
+    <li>Use Notices, Payments, Tickets, and Visitors from the direct links.</li>
+    <li>Keep the dashboard short and action-focused.</li>
+</ul>
+{% endblock %}
+
+{% block extra_content %}
+<section class="mt-3" id="assign-payment">
+    <article class="surface-card">
+        <h2 class="section-title mb-1">Assign Payment</h2>
+        <p class="section-copy">Create a maintenance due directly from the admin dashboard.</p>
+        <form method="post" action="{% url 'assign_payment' %}" class="row g-3">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'dashboard' %}">
+            <div class="col-md-4">
+                {{ assign_payment_form.resident.label_tag }}
+                {{ assign_payment_form.resident }}
+            </div>
+            <div class="col-md-3">
+                {{ assign_payment_form.month.label_tag }}
+                {{ assign_payment_form.month }}
+            </div>
+            <div class="col-md-2">
+                {{ assign_payment_form.year.label_tag }}
+                {{ assign_payment_form.year }}
+            </div>
+            <div class="col-md-3">
+                {{ assign_payment_form.amount.label_tag }}
+                {{ assign_payment_form.amount }}
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Assign Due</button>
+            </div>
+        </form>
+    </article>
+</section>
+
+<section class="mt-3" id="members-section">
+    <article class="surface-card">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+            <div>
+                <h2 class="section-title mb-1">Pending Resident Approvals</h2>
+                <p class="section-copy mb-0">Review uploaded documents and approve residents directly from this dashboard.</p>
+            </div>
+        </div>
+
+        {% if pending_residents %}
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Resident</th>
+                            <th>Flat</th>
+                            <th>Phone</th>
+                            <th>ID Proof</th>
+                            <th>Address Proof</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for resident in pending_residents %}
+                            <tr>
+                                <td>
+                                    <strong>{{ resident.username }}</strong><br>
+                                    <small class="text-muted">{{ resident.email|default:"No email added" }}</small>
+                                </td>
+                                <td>{{ resident.flat_number|default:"-" }}</td>
+                                <td>{{ resident.phone }}</td>
+                                <td>
+                                    {% if resident.id_proof %}
+                                        <a href="{{ resident.id_proof.url }}" target="_blank" rel="noopener">View ID</a>
+                                    {% else %}
+                                        <span class="text-muted">Missing</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if resident.address_proof %}
+                                        <a href="{{ resident.address_proof.url }}" target="_blank" rel="noopener">View Address</a>
+                                    {% else %}
+                                        <span class="text-muted">Missing</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    <form method="post" action="{% url 'approve_resident' resident.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                No pending resident approvals right now.
+            </div>
+        {% endif %}
+    </article>
+</section>
+
+<section class="mt-3">
+    <article class="surface-card">
+        <div class="mb-3">
+            <h2 class="section-title mb-1">Registered Users</h2>
+            <p class="section-copy mb-0">Everyone registered in the system, grouped by role.</p>
+        </div>
+
+        <div class="role-grid">
+            {% for group in users_by_role %}
+                <section class="role-card">
+                    <div class="role-header">
+                        <h3>{{ group.label }}</h3>
+                        <span>{{ group.users|length }}</span>
+                    </div>
+                    {% if group.users %}
+                        <div class="role-list">
+                            {% for user_item in group.users %}
+                                <div class="role-list-item">
+                                    <div>
+                                        <strong>{{ user_item.username }}</strong>
+                                        <small>{{ user_item.email|default:"No email added" }}</small>
+                                    </div>
+                                    <div class="role-meta">
+                                        {% if user_item.role == "resident" %}
+                                            <span>{{ user_item.flat_number|default:"No flat" }}</span>
+                                            <span class="{% if user_item.is_approved %}status-pill status-paid{% else %}status-pill status-pending{% endif %}">
+                                                {% if user_item.is_approved %}Approved{% else %}Pending{% endif %}
+                                            </span>
+                                        {% else %}
+                                            <span>{{ user_item.phone|default:"No phone" }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            No {{ group.label|lower }} registered yet.
+                        </div>
+                    {% endif %}
+                </section>
+            {% endfor %}
+        </div>
+    </article>
+</section>
+
+<section class="content-grid mt-3">
+    <article class="surface-card">
+        <h2 class="section-title">Tickets by Category</h2>
+        <p class="section-copy">See which maintenance areas are generating the most requests.</p>
+        <canvas id="ticketCategoryChart" height="160"></canvas>
+    </article>
+
+    <article class="surface-card">
+        <h2 class="section-title">Direct Actions</h2>
+        <p class="section-copy">Open the main admin workflows directly from here.</p>
+        <div class="quick-grid">
+            <a href="/tickets/all/" class="quick-link">
+                <strong>Manage Tickets</strong>
+                <span>Review and update maintenance requests.</span>
+            </a>
+            <a href="/visitors/list/" class="quick-link">
+                <strong>Visitor Logs</strong>
+                <span>Inspect entry, exit, and vehicle records.</span>
+            </a>
+            <a href="/notices/list/" class="quick-link">
+                <strong>Manage Notices</strong>
+                <span>Create, target, and delete notices.</span>
+            </a>
+            <a href="/payments/manage/" class="quick-link">
+                <strong>Manage Payments</strong>
+                <span>Track dues, methods, and updates.</span>
+            </a>
+        </div>
+    </article>
+</section>
+
+<section class="content-grid mt-3">
+    <article class="surface-card">
+        <h2 class="section-title">Payments Collected by Month</h2>
+        <p class="section-copy">Track collected maintenance value over time.</p>
+        <canvas id="paymentMonthChart" height="160"></canvas>
+    </article>
+
+    <article class="surface-card">
+        <h2 class="section-title">Notices Published by Month</h2>
+        <p class="section-copy">Measure the communication rhythm across recent months.</p>
+        <canvas id="noticeMonthChart" height="160"></canvas>
+    </article>
+</section>
+
+{{ analytics.ticket_category_labels|json_script:"ticket-category-labels" }}
+{{ analytics.ticket_category_values|json_script:"ticket-category-values" }}
+{{ analytics.payment_labels|json_script:"payment-labels" }}
+{{ analytics.payment_values|json_script:"payment-values" }}
+{{ analytics.notice_labels|json_script:"notice-labels" }}
+{{ analytics.notice_values|json_script:"notice-values" }}
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ticketCategoryLabels = JSON.parse(document.getElementById("ticket-category-labels").textContent);
+    const ticketCategoryValues = JSON.parse(document.getElementById("ticket-category-values").textContent);
+    const paymentLabels = JSON.parse(document.getElementById("payment-labels").textContent);
+    const paymentValues = JSON.parse(document.getElementById("payment-values").textContent);
+    const noticeLabels = JSON.parse(document.getElementById("notice-labels").textContent);
+    const noticeValues = JSON.parse(document.getElementById("notice-values").textContent);
+
+    new Chart(document.getElementById("ticketCategoryChart"), {
+        type: "doughnut",
+        data: {
+            labels: ticketCategoryLabels,
+            datasets: [{
+                data: ticketCategoryValues,
+                backgroundColor: ["#1d4ed8", "#0f766e", "#c2410c", "#7c3aed", "#475569"],
+            }]
+        },
+        options: { plugins: { legend: { position: "bottom" } } }
+    });
+
+    new Chart(document.getElementById("paymentMonthChart"), {
+        type: "bar",
+        data: {
+            labels: paymentLabels,
+            datasets: [{
+                label: "Amount",
+                data: paymentValues,
+                backgroundColor: "#c2410c",
+            }]
+        },
+        options: { plugins: { legend: { display: false } } }
+    });
+
+    new Chart(document.getElementById("noticeMonthChart"), {
+        type: "bar",
+        data: {
+            labels: noticeLabels,
+            datasets: [{
+                label: "Notices",
+                data: noticeValues,
+                backgroundColor: "#1d4ed8",
+            }]
+        },
+        options: { plugins: { legend: { display: false } } }
+    });
+</script>
+{% endblock %}

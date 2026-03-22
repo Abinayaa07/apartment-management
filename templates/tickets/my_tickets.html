@@ -1,0 +1,70 @@
+{% extends "base/page_base.html" %}
+
+{% block title %}My Tickets{% endblock %}
+{% block kicker %}Tickets{% endblock %}
+{% block heading %}My Tickets{% endblock %}
+{% block intro %}Track the progress of your maintenance requests and attached images.{% endblock %}
+{% block top_actions %}
+<a href="/tickets/create/" class="btn btn-primary">Create Ticket</a>
+<a href="/dashboard/" class="btn btn-outline-secondary">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-5">
+        <input type="text" name="q" value="{{ filters.q }}" class="form-control" placeholder="Search title, description, category">
+    </div>
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select name="category" class="form-select">
+            <option value="">All Categories</option>
+            {% for value, label in category_choices %}
+                <option value="{{ value }}" {% if filters.category == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2 d-grid">
+        <button class="btn btn-dark">Apply</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Status</th>
+                <th>Image</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ticket in tickets %}
+            <tr>
+                <td>{{ ticket.title }}</td>
+                <td class="text-capitalize">{{ ticket.category }}</td>
+                <td><span class="status-pill status-{{ ticket.status }}">{{ ticket.status }}</span></td>
+                <td>
+                    {% if ticket.image %}
+                    <a href="{{ ticket.image.url }}" target="_blank">View Image</a>
+                    {% else %}
+                    <span class="text-muted">No image</span>
+                    {% endif %}
+                </td>
+                <td>{{ ticket.created_at }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No tickets yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

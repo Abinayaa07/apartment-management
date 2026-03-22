@@ -1,0 +1,52 @@
+{% extends "base/page_base.html" %}
+
+{% block title %}Payment History{% endblock %}
+{% block kicker %}Payments{% endblock %}
+{% block heading %}Payment History{% endblock %}
+{% block intro %}Review completed dues and reference transaction identifiers when needed.{% endblock %}
+{% block top_actions %}
+<a href="/payments/dues/" class="btn btn-outline-dark">View Dues</a>
+<a href="/dashboard/" class="btn btn-outline-secondary">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <input type="text" name="month" value="{{ filters.month }}" class="form-control" placeholder="Month">
+    </div>
+    <div class="col-md-3">
+        <input type="text" name="year" value="{{ filters.year }}" class="form-control" placeholder="Year">
+    </div>
+    <div class="col-md-4">
+        <input type="text" name="transaction_id" value="{{ filters.transaction_id }}" class="form-control" placeholder="Transaction ID">
+    </div>
+    <div class="col-md-2 d-grid">
+        <button class="btn btn-dark">Apply</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Month</th>
+                <th>Year</th>
+                <th>Amount</th>
+                <th>Transaction ID</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for payment in payments %}
+            <tr>
+                <td>{{ payment.month }}</td>
+                <td>{{ payment.year }}</td>
+                <td>{{ payment.amount }}</td>
+                <td>{{ payment.transaction_id }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4" class="text-center text-muted py-4">No completed payments yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

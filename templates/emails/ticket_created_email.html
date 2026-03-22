@@ -1,0 +1,22 @@
+{% extends "emails/base_email.html" %}
+
+{% block body %}
+<p style="margin:0 0 18px;">Hello {{ user_name }},</p>
+<p style="margin:0 0 18px; line-height:1.7;">Your ticket has been successfully created.</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #e3dac9; border-radius:16px; overflow:hidden; margin:0 0 20px;">
+    <tr><td style="padding:14px 18px; background:#f8f4ec; font-weight:700;">Ticket Details</td></tr>
+    <tr><td style="padding:18px; line-height:1.9;">
+        <strong>Ticket ID:</strong> {{ ticket_id }}<br>
+        <strong>Subject:</strong> {{ ticket_subject }}<br>
+        <strong>Priority:</strong> {{ priority }}<br>
+        <strong>Status:</strong> {{ status }}<br>
+        <strong>Created On:</strong> {{ created_date }}
+    </td></tr>
+</table>
+
+<p style="margin:0 0 22px; line-height:1.7;">Our team will review your request and respond shortly.</p>
+<p style="margin:0 0 24px;">
+    <a href="{{ action_url }}" style="display:inline-block; padding:12px 22px; background:#1d4ed8; color:#ffffff; text-decoration:none; border-radius:999px; font-weight:700;">{{ action_label }}</a>
+</p>
+{% endblock %}

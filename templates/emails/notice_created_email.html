@@ -1,0 +1,19 @@
+{% extends "emails/base_email.html" %}
+
+{% block body %}
+<p style="margin:0 0 18px;">Hello,</p>
+<p style="margin:0 0 18px; line-height:1.7;">A new notice has been published in AMS Apartment.</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #e3dac9; border-radius:16px; overflow:hidden; margin:0 0 20px;">
+    <tr><td style="padding:14px 18px; background:#f8f4ec; font-weight:700;">Notice Details</td></tr>
+    <tr><td style="padding:18px; line-height:1.9;">
+        <strong>Title:</strong> {{ notice_title }}<br>
+        <strong>Audience:</strong> {{ audience }}<br>
+        <strong>Published On:</strong> {{ published_on }}
+    </td></tr>
+</table>
+
+<div style="padding:16px 18px; border-radius:16px; background:#f8f4ec; line-height:1.8;">
+    {{ notice_message|linebreaksbr }}
+</div>
+{% endblock %}

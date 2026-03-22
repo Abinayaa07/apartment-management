@@ -1,0 +1,17 @@
+{% extends "emails/base_email.html" %}
+
+{% block body %}
+<p style="margin:0 0 18px;">Hello {{ user_name }},</p>
+<p style="margin:0 0 18px; line-height:1.7;">We detected a login to your AMS Apartment account.</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #e3dac9; border-radius:16px; overflow:hidden; margin:0 0 20px;">
+    <tr><td style="padding:14px 18px; background:#f8f4ec; font-weight:700;">Login Details</td></tr>
+    <tr><td style="padding:18px; line-height:1.9;">
+        <strong>Date &amp; Time:</strong> {{ login_time }}<br>
+        <strong>Role:</strong> {{ role }}
+    </td></tr>
+</table>
+
+<p style="margin:0 0 16px; line-height:1.7;">If this was you, no action is required.</p>
+<p style="margin:0; line-height:1.7;">If you do not recognize this activity, please reset your password immediately.</p>
+{% endblock %}

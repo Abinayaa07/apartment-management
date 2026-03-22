@@ -1,0 +1,53 @@
+{% extends "base/page_base.html" %}
+
+{% block title %}Notice Board{% endblock %}
+{% block kicker %}Communications{% endblock %}
+{% block heading %}Notice Board{% endblock %}
+{% block intro %}Browse published updates, announcements, and attached documents.{% endblock %}
+{% block top_actions %}
+{% if can_manage_notices %}
+<a href="/notices/create/" class="btn btn-primary">Create Notice</a>
+{% endif %}
+<a href="/dashboard/" class="btn btn-outline-secondary">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-10">
+        <input type="text" name="q" value="{{ filters.q }}" class="form-control" placeholder="Search title or notice text">
+    </div>
+    <div class="col-md-2 d-grid">
+        <button class="btn btn-dark">Search</button>
+    </div>
+</form>
+
+<div class="stack-list">
+    {% for notice in notices %}
+    <div class="item-card">
+        <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+            <div>
+                <h4>{{ notice.title }}</h4>
+                <p class="mb-2">{{ notice.message }}</p>
+                <div class="d-flex gap-2 flex-wrap align-items-center">
+                    <div class="muted-note">Published on {{ notice.created_at|date:"d M Y, h:i A" }}</div>
+                    <span class="status-pill status-assigned">{{ notice.get_audience_display }}</span>
+                </div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                {% if notice.document %}
+                <a href="{{ notice.document.url }}" class="btn btn-outline-dark btn-sm">Download</a>
+                {% endif %}
+                {% if can_manage_notices %}
+                <form method="POST" action="{% url 'delete_notice' notice.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">No notices published yet.</div>
+    {% endfor %}
+</div>
+{% endblock %}

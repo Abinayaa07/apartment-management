@@ -1,0 +1,98 @@
+{% extends "base/page_base.html" %}
+
+{% block title %}Manage Payments{% endblock %}
+{% block kicker %}Finance Desk{% endblock %}
+{% block heading %}Manage Payments{% endblock %}
+{% block intro %}Track collection status across residents and update payment records as needed.{% endblock %}
+{% block top_actions %}
+<a href="#assign-payment" class="btn btn-primary">Assign Payment</a>
+<a href="/dashboard/" class="btn btn-outline-secondary">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<section class="mb-4" id="assign-payment">
+    <div class="item-card">
+        <h4>Assign Payment</h4>
+        <p class="muted-note mb-3">Create a new due for a resident without leaving the payments page.</p>
+        <form method="post" action="{% url 'assign_payment' %}" class="row g-3">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{% url 'manage_payments' %}">
+            <div class="col-md-4">
+                {{ assign_form.resident.label_tag }}
+                {{ assign_form.resident }}
+            </div>
+            <div class="col-md-3">
+                {{ assign_form.month.label_tag }}
+                {{ assign_form.month }}
+            </div>
+            <div class="col-md-2">
+                {{ assign_form.year.label_tag }}
+                {{ assign_form.year }}
+            </div>
+            <div class="col-md-3">
+                {{ assign_form.amount.label_tag }}
+                {{ assign_form.amount }}
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Assign Due</button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="q" value="{{ filters.q }}" class="form-control" placeholder="Search resident, transaction, month">
+    </div>
+    <div class="col-md-2">
+        <input type="text" name="month" value="{{ filters.month }}" class="form-control" placeholder="Month">
+    </div>
+    <div class="col-md-2">
+        <input type="text" name="year" value="{{ filters.year }}" class="form-control" placeholder="Year">
+    </div>
+    <div class="col-md-2">
+        <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2 d-grid">
+        <button class="btn btn-dark">Apply</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Resident</th>
+                <th>Month</th>
+                <th>Year</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Method</th>
+                <th>Transaction ID</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for payment in payments %}
+        <tr>
+            <td>{{ payment.resident.username }}</td>
+            <td>{{ payment.month }}</td>
+            <td>{{ payment.year }}</td>
+            <td>INR {{ payment.amount }}</td>
+            <td><span class="status-pill status-{{ payment.status }}">{{ payment.get_status_display }}</span></td>
+            <td>{{ payment.get_payment_method_display|default:"-" }}</td>
+            <td>{{ payment.transaction_id|default:"-" }}</td>
+            <td><a href="/payments/update/{{ payment.id }}/" class="btn btn-sm btn-primary">Update</a></td>
+        </tr>
+        {% empty %}
+            <tr><td colspan="8" class="text-center text-muted py-4">No payment records available.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

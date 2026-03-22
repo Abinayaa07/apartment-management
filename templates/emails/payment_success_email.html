@@ -1,0 +1,26 @@
+{% extends "emails/base_email.html" %}
+
+{% block body %}
+<p style="margin:0 0 18px;">Hello {{ user_name }},</p>
+<p style="margin:0 0 18px; line-height:1.7;">Your payment has been successfully completed.</p>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #e3dac9; border-radius:16px; overflow:hidden; margin:0 0 20px;">
+    <tr><td style="padding:14px 18px; background:#f8f4ec; font-weight:700;">Payment Details</td></tr>
+    <tr><td style="padding:18px; line-height:1.9;">
+        <strong>Amount Paid:</strong> INR {{ amount }}<br>
+        <strong>Payment ID:</strong> {{ payment_id }}<br>
+        <strong>Payment Method:</strong> {{ payment_method }}<br>
+        <strong>Date:</strong> {{ payment_date }}
+    </td></tr>
+</table>
+
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border:1px solid #e3dac9; border-radius:16px; overflow:hidden; margin:0 0 20px;">
+    <tr><td style="padding:14px 18px; background:#f8f4ec; font-weight:700;">Summary</td></tr>
+    <tr><td style="padding:18px; line-height:1.9;">
+        <strong>Service:</strong> {{ service_name }}<br>
+        <strong>Status:</strong> {{ status }}
+    </td></tr>
+</table>
+
+<p style="margin:0; line-height:1.7;">If you have any questions, feel free to contact us.</p>
+{% endblock %}

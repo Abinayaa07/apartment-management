@@ -1,0 +1,18 @@
+{% extends "base/page_base.html" %}
+
+{% block title %}Visitor Entry{% endblock %}
+{% block kicker %}Security Desk{% endblock %}
+{% block heading %}Visitor Entry{% endblock %}
+{% block intro %}Log incoming visitors quickly and maintain a clean gate register for the day.{% endblock %}
+{% block top_actions %}
+<a href="/visitors/list/" class="btn btn-outline-dark">Visitor Log</a>
+<a href="/dashboard/" class="btn btn-outline-secondary">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<form method="POST" class="d-grid gap-3 content-narrow">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary">Add Visitor</button>
+</form>
+{% endblock %}

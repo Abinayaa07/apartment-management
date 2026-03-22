@@ -1,0 +1,32 @@
+<button id="pay-btn" type="button">Pay Now</button>
+
+<form id="payment-success-form" method="POST" action="/payments/success/">
+{% csrf_token %}
+<input type="hidden" name="payment_id" value="{{ payment.id }}">
+<input type="hidden" name="razorpay_payment_id" id="razorpay-payment-id">
+</form>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+
+var options = {
+    "key": "RAZORPAY_KEY",
+    "amount": "{{ payment.amount|floatformat:0 }}00",
+    "currency": "INR",
+    "order_id": "{{ order_id }}",
+    "name": "Apartment Management",
+    "handler": function (response) {
+        document.getElementById("razorpay-payment-id").value = response.razorpay_payment_id;
+        document.getElementById("payment-success-form").submit();
+    }
+};
+
+var rzp = new Razorpay(options);
+
+document.getElementById('pay-btn').onclick = function(e){
+    rzp.open();
+    e.preventDefault();
+}
+
+</script>

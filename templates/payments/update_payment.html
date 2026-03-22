@@ -1,0 +1,48 @@
+{% extends "base/page_base.html" %}
+
+{% block title %}Update Payment{% endblock %}
+{% block kicker %}Finance Desk{% endblock %}
+{% block heading %}Update Payment{% endblock %}
+{% block intro %}Modify status and transaction details for this resident payment record.{% endblock %}
+{% block top_actions %}
+<a href="/payments/manage/" class="btn btn-outline-secondary">Back to Payments</a>
+{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm p-4">
+    <p><strong>Resident:</strong> {{ payment.resident.username }}</p>
+    <p><strong>Block:</strong> {{ payment.resident.block_name|default:"-" }}</p>
+    <p><strong>Month:</strong> {{ payment.month }}</p>
+    <p><strong>Year:</strong> {{ payment.year }}</p>
+    <p><strong>Amount:</strong> INR {{ payment.amount }}</p>
+
+    <form method="POST" class="d-grid gap-3" style="max-width: 460px;">
+        {% csrf_token %}
+        <div>
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select">
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if payment.status == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="form-label">Payment Method</label>
+            <select name="payment_method" class="form-select">
+                <option value="">Select method</option>
+                {% for value, label in method_choices %}
+                    <option value="{{ value }}" {% if payment.payment_method == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div>
+            <label class="form-label">Transaction ID</label>
+            <input type="text" name="transaction_id" value="{{ payment.transaction_id }}" class="form-control">
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">Save Changes</button>
+            <a href="/payments/manage/" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

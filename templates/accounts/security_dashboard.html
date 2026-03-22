@@ -1,0 +1,33 @@
+{% extends "accounts/dashboard_base.html" %}
+
+{% block title %}Security Dashboard{% endblock %}
+{% block sidebar_title %}Gate Console{% endblock %}
+{% block sidebar_copy %}Monitor visitor flow, log entries accurately, and keep the front gate aligned with current notices.{% endblock %}
+{% block eyebrow %}Security Operations{% endblock %}
+{% block hero_title %}Security Dashboard{% endblock %}
+{% block hero_copy %}Maintain a clean visitor trail and keep real-time gate activity visible at a glance.{% endblock %}
+
+{% block sidebar_links %}
+<a href="/visitors/add/">
+    Add Visitor
+    <small>Capture a new entry at the gate.</small>
+</a>
+<a href="/visitors/list/">
+    Visitor Log
+    <small>Review visitor records and mark exits.</small>
+</a>
+<a href="/notices/list/">
+    Notices
+    <small>Stay aligned with the latest resident communications.</small>
+</a>
+{% endblock %}
+
+{% block side_panel_title %}Security Priorities{% endblock %}
+{% block side_panel_copy %}Good records reduce confusion during handover and incident review.{% endblock %}
+{% block side_panel_content %}
+<ul class="bullet-list">
+    <li>Verify entry details before allowing visitor access.</li>
+    <li>Mark exits promptly to keep occupancy logs accurate.</li>
+    <li>Check notices regularly for event-day access changes.</li>
+</ul>
+{% endblock %}

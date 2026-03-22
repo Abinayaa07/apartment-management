@@ -1,0 +1,102 @@
+{% extends "base/auth_base.html" %}
+
+{% block title %}Register{% endblock %}
+{% block heading %}Register{% endblock %}
+{% block subheading %}Create your account for AMS Apartment.{% endblock %}
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data" class="d-grid gap-3">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <p>
+        {{ form.username.label_tag }}
+        {{ form.username }}
+        {{ form.username.errors }}
+    </p>
+    <p>
+        {{ form.email.label_tag }}
+        {{ form.email }}
+        {{ form.email.errors }}
+    </p>
+    <p>
+        {{ form.phone.label_tag }}
+        {{ form.phone }}
+        {{ form.phone.errors }}
+    </p>
+    <p>
+        {{ form.block_name.label_tag }}
+        {{ form.block_name }}
+        <span class="helptext">{{ form.block_name.help_text }}</span>
+        {{ form.block_name.errors }}
+    </p>
+    <p>
+        {{ form.flat_number.label_tag }}
+        {{ form.flat_number }}
+        <span class="helptext">{{ form.flat_number.help_text }}</span>
+        {{ form.flat_number.errors }}
+    </p>
+    <p>
+        {{ form.vehicle_number.label_tag }}
+        {{ form.vehicle_number }}
+        <span class="helptext">{{ form.vehicle_number.help_text }}</span>
+        {{ form.vehicle_number.errors }}
+    </p>
+    <p>
+        {{ form.role.label_tag }}
+        {{ form.role }}
+        <span class="helptext">{{ form.role.help_text }}</span>
+        {{ form.role.errors }}
+    </p>
+    <p>
+        {{ form.id_proof.label_tag }}
+        {{ form.id_proof }}
+        {{ form.id_proof.errors }}
+    </p>
+    <p>
+        {{ form.address_proof.label_tag }}
+        {{ form.address_proof }}
+        {{ form.address_proof.errors }}
+    </p>
+    <p>
+        {{ form.password1.label_tag }}
+        {{ form.password1 }}
+        <span class="helptext password-help">{{ form.password1.help_text|safe }}</span>
+        {{ form.password1.errors }}
+    </p>
+    <p>
+        {{ form.password2.label_tag }}
+        {{ form.password2 }}
+        <span class="helptext password-help">{{ form.password2.help_text|safe }}</span>
+        {{ form.password2.errors }}
+    </p>
+    <button class="btn btn-brand">Register</button>
+    <div class="auth-linkline">Already have an account? <a href="/login/">Login</a></div>
+</form>
+<script>
+    (function () {
+        const helpTexts = document.querySelectorAll(".password-help");
+        helpTexts.forEach((item) => {
+            item.style.display = "none";
+        });
+
+        ["id_password1", "id_password2"].forEach((fieldId) => {
+            const field = document.getElementById(fieldId);
+            if (!field) {
+                return;
+            }
+            const help = field.parentElement.querySelector(".password-help");
+            if (!help) {
+                return;
+            }
+            field.addEventListener("focus", function () {
+                help.style.display = "block";
+            });
+            field.addEventListener("blur", function () {
+                if (!field.value) {
+                    help.style.display = "none";
+                }
+            });
+        });
+    }());
+</script>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base/page_base.html" %}
+
+{% block title %}Create Ticket{% endblock %}
+{% block kicker %}Tickets{% endblock %}
+{% block heading %}Create Maintenance Ticket{% endblock %}
+{% block intro %}Submit a clear issue report so staff can triage and resolve it faster.{% endblock %}
+{% block top_actions %}
+<a href="/tickets/my/" class="btn btn-outline-dark">My Tickets</a>
+<a href="/dashboard/" class="btn btn-outline-secondary">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<form method="POST" enctype="multipart/form-data" class="d-grid gap-3 content-narrow">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary">Submit Ticket</button>
+</form>
+{% endblock %}

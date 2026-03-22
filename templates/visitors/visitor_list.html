@@ -1,0 +1,82 @@
+{% extends "base/page_base.html" %}
+
+{% block title %}Visitor Log{% endblock %}
+{% block kicker %}Security Desk{% endblock %}
+{% block heading %}Visitor Log{% endblock %}
+{% block intro %}Review all gate entries, check who is still inside, and mark exits when visitors leave.{% endblock %}
+{% block top_actions %}
+<a href="/visitors/add/" class="btn btn-primary">Add Visitor</a>
+<a href="/dashboard/" class="btn btn-outline-secondary">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="q" value="{{ filters.q }}" class="form-control" placeholder="Search name, phone, purpose, flat, vehicle">
+    </div>
+    <div class="col-md-2">
+        <input type="text" name="flat_number" value="{{ filters.flat_number }}" class="form-control" placeholder="Flat number">
+    </div>
+    <div class="col-md-2">
+        <input type="date" name="date" value="{{ filters.date }}" class="form-control">
+    </div>
+    <div class="col-md-2">
+        <select name="inside" class="form-select">
+            <option value="">All Visitors</option>
+            <option value="yes" {% if filters.inside == "yes" %}selected{% endif %}>Inside</option>
+            <option value="no" {% if filters.inside == "no" %}selected{% endif %}>Exited</option>
+        </select>
+    </div>
+    <div class="col-md-2 d-grid">
+        <button class="btn btn-dark">Apply</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Flat</th>
+                <th>Vehicle</th>
+                <th>Purpose</th>
+                <th>Entry</th>
+                <th>Exit</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for visitor in visitors %}
+            <tr>
+                <td>{{ visitor.name }}</td>
+                <td>{{ visitor.phone }}</td>
+                <td>{{ visitor.flat_number }}</td>
+                <td>{{ visitor.vehicle_number|default:"-" }}</td>
+                <td>{{ visitor.purpose }}</td>
+                <td>{{ visitor.entry_time }}</td>
+                <td>
+                    {% if visitor.exit_time %}
+                    {{ visitor.exit_time }}
+                    {% else %}
+                    <span class="status-pill status-pending">Inside</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if not visitor.exit_time %}
+                    <form method="POST" action="/visitors/exit/{{visitor.id}}/" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm">Mark Exit</button>
+                    </form>
+                    {% else %}
+                    <span class="text-muted">Completed</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="8" class="text-center text-muted py-4">No visitor logs yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

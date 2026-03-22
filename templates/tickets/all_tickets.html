@@ -1,0 +1,72 @@
+{% extends "base/page_base.html" %}
+
+{% block title %}All Tickets{% endblock %}
+{% block kicker %}Operations{% endblock %}
+{% block heading %}All Tickets{% endblock %}
+{% block intro %}Review incoming resident issues, attached evidence, and current ticket status.{% endblock %}
+{% block top_actions %}
+<a href="/dashboard/" class="btn btn-outline-secondary">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="q" value="{{ filters.q }}" class="form-control" placeholder="Search title, resident, category">
+    </div>
+    <div class="col-md-2">
+        <input type="text" name="resident" value="{{ filters.resident }}" class="form-control" placeholder="Resident">
+    </div>
+    <div class="col-md-2">
+        <select name="status" class="form-select">
+            <option value="">All Statuses</option>
+            {% for value, label in status_choices %}
+                <option value="{{ value }}" {% if filters.status == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2">
+        <select name="category" class="form-select">
+            <option value="">All Categories</option>
+            {% for value, label in category_choices %}
+                <option value="{{ value }}" {% if filters.category == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-2 d-grid">
+        <button class="btn btn-dark">Apply</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Resident</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Image</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for ticket in tickets %}
+            <tr>
+                <td>{{ ticket.resident }}</td>
+                <td>{{ ticket.title }}</td>
+                <td><span class="status-pill status-{{ ticket.status }}">{{ ticket.status }}</span></td>
+                <td>
+                    {% if ticket.image %}
+                    <a href="{{ ticket.image.url }}" target="_blank">View Image</a>
+                    {% else %}
+                    <span class="text-muted">No image</span>
+                    {% endif %}
+                </td>
+                <td><a class="btn btn-warning btn-sm" href="/tickets/update/{{ticket.id}}">Update</a></td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5" class="text-center text-muted py-4">No tickets available.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
