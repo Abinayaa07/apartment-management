@@ -6,19 +6,31 @@
     <title>{% block title %}Apartment Management{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        :root {
+            --page-card: rgba(255, 255, 255, 0.92);
+            --page-border: rgba(255, 255, 255, 0.62);
+            --page-ink: #172033;
+            --page-muted: #5b6474;
+            --page-soft: #4f46e5;
+            --page-accent: #0f766e;
+            --page-bg-1: #6d87ff;
+            --page-bg-2: #7a62d8;
+            --page-bg-3: #9254cf;
+        }
+
         body {
             min-height: 100vh;
             margin: 0;
             background:
-                radial-gradient(circle at top left, rgba(15, 118, 110, 0.14), transparent 26%),
-                radial-gradient(circle at bottom right, rgba(29, 78, 216, 0.12), transparent 24%),
-                linear-gradient(160deg, #f7f4ee 0%, #efe7d9 100%);
-            color: #1f2937;
+                radial-gradient(circle at 4% 14%, rgba(255,255,255,0.16) 0, rgba(255,255,255,0.16) 10%, transparent 10.5%),
+                radial-gradient(circle at 90% 84%, rgba(255,255,255,0.14) 0, rgba(255,255,255,0.14) 11%, transparent 11.5%),
+                linear-gradient(135deg, var(--page-bg-1) 0%, var(--page-bg-2) 52%, var(--page-bg-3) 100%);
+            color: var(--page-ink);
         }
 
         .page-shell {
             width: min(1180px, calc(100% - 2rem));
-            margin: 1.5rem auto;
+            margin: 1.5rem auto 2rem;
         }
 
         .page-topbar {
@@ -26,11 +38,12 @@
             justify-content: space-between;
             align-items: center;
             gap: 1rem;
-            padding: 1rem 1.25rem;
-            border: 1px solid #ded6c8;
-            border-radius: 1.25rem;
-            background: rgba(255, 253, 248, 0.9);
-            box-shadow: 0 16px 42px rgba(15, 23, 42, 0.08);
+            padding: 1.1rem 1.3rem;
+            border: 1px solid var(--page-border);
+            border-radius: 1.4rem;
+            background: rgba(255, 255, 255, 0.82);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12);
             margin-bottom: 1rem;
         }
 
@@ -38,18 +51,19 @@
             text-transform: uppercase;
             letter-spacing: 0.18em;
             font-size: 0.78rem;
-            color: #6b7280;
+            color: var(--page-muted);
         }
 
         .page-topbar h1 {
             font-size: clamp(1.7rem, 3vw, 2.5rem);
             margin: 0.35rem 0 0;
             font-weight: 700;
+            color: #1b2440;
         }
 
         .page-topbar p {
             margin: 0.45rem 0 0;
-            color: #6b7280;
+            color: var(--page-muted);
         }
 
         .page-actions {
@@ -59,11 +73,12 @@
         }
 
         .surface {
-            border: 1px solid #ded6c8;
-            border-radius: 1.25rem;
-            background: #fffdf9;
-            box-shadow: 0 16px 42px rgba(15, 23, 42, 0.08);
-            padding: 1.35rem;
+            border: 1px solid var(--page-border);
+            border-radius: 1.4rem;
+            background: var(--page-card);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12);
+            padding: 1.45rem;
         }
 
         .content-narrow {
@@ -80,7 +95,7 @@
 
         .table thead th {
             border-bottom-width: 1px;
-            color: #4b5563;
+            color: var(--page-muted);
             text-transform: uppercase;
             font-size: 0.78rem;
             letter-spacing: 0.08em;
@@ -90,7 +105,7 @@
             vertical-align: middle;
             padding-top: 0.95rem;
             padding-bottom: 0.95rem;
-            color: #374151;
+            color: #334155;
         }
 
         .status-pill {
@@ -131,9 +146,9 @@
         input[type="date"],
         input[type="file"],
         select {
-            border-radius: 0.9rem;
+            border-radius: 1rem;
             padding: 0.8rem 0.95rem;
-            border: 1px solid #d6d3d1;
+            border: 1px solid #dbe3f2;
             width: 100%;
             background: #fff;
         }
@@ -143,7 +158,7 @@
         }
 
         .btn {
-            border-radius: 0.85rem;
+            border-radius: 1rem;
             padding: 0.7rem 1rem;
             font-weight: 600;
         }
@@ -162,7 +177,7 @@
         .surface form .helptext {
             display: block;
             margin-top: 0.35rem;
-            color: #6b7280;
+            color: var(--page-muted);
             font-size: 0.85rem;
             line-height: 1.5;
         }
@@ -184,11 +199,11 @@
         }
 
         .item-card {
-            border: 1px solid #ebe4d6;
-            border-radius: 1.1rem;
-            background: #fff;
+            border: 1px solid rgba(99, 102, 241, 0.12);
+            border-radius: 1.15rem;
+            background: rgba(255, 255, 255, 0.9);
             padding: 1.25rem;
-            box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
+            box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08);
         }
 
         .item-card h4,
@@ -198,17 +213,17 @@
         }
 
         .muted-note {
-            color: #6b7280;
+            color: var(--page-muted);
             font-size: 0.92rem;
         }
 
         .empty-state {
-            border: 1px dashed #ded6c8;
+            border: 1px dashed rgba(99, 102, 241, 0.22);
             border-radius: 1rem;
             padding: 1.25rem;
             text-align: center;
-            color: #6b7280;
-            background: #fffcf7;
+            color: var(--page-muted);
+            background: rgba(255, 255, 255, 0.56);
         }
 
         @media (max-width: 768px) {

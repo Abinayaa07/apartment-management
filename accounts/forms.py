@@ -1,5 +1,5 @@
 from django import forms
-from .models import User
+from .models import FamilyMember, User
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -46,3 +46,21 @@ class RegisterForm(UserCreationForm):
                 self.add_error("address_proof", "Residents must upload an address proof.")
 
         return cleaned_data
+
+
+class FamilyMemberForm(forms.ModelForm):
+    class Meta:
+        model = FamilyMember
+        fields = [
+            "member_name",
+            "gender",
+            "relationship",
+            "date_of_birth",
+            "kyc_document",
+        ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["member_name"].help_text = "Enter the full name of the family or household member."
+        self.fields["relationship"].help_text = "Example: Self, Father, Mother, Sister, Son."
+        self.fields["date_of_birth"].widget = forms.DateInput(attrs={"type": "date"})

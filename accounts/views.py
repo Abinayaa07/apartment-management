@@ -5,7 +5,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import RegisterForm
+from .forms import FamilyMemberForm, RegisterForm
 from django.contrib import messages
 from django.db.models import Count, Sum
 from django.db.models.functions import TruncMonth
@@ -75,6 +75,51 @@ def register(request):
     return render(request, 'accounts/register.html', {'form': form})
 
 
+@login_required
+def my_family_details(request):
+    if request.user.role != "resident":
+        messages.error(request, "Only residents can manage family details.")
+        return redirect("dashboard")
+
+    if request.method == "POST":
+        form = FamilyMemberForm(request.POST, request.FILES)
+        if form.is_valid():
+            family_member = form.save(commit=False)
+            family_member.resident = request.user
+            family_member.save()
+            messages.success(request, "Family member details added successfully.")
+            return redirect("my_family_details")
+    else:
+        form = FamilyMemberForm()
+
+    return render(
+        request,
+        "accounts/family_details.html",
+        {
+            "form": form,
+            "family_members": request.user.family_members.all(),
+        },
+    )
+
+
+@login_required
+def manage_family_details(request):
+    if request.user.role not in {"admin", "staff"}:
+        messages.error(request, "Only staff and admin can review family details.")
+        return redirect("dashboard")
+
+    residents = (
+        User.objects.filter(role="resident")
+        .prefetch_related("family_members")
+        .order_by("block_name", "flat_number", "username")
+    )
+    return render(
+        request,
+        "accounts/manage_family_details.html",
+        {"residents": residents},
+    )
+
+
 
 from django.contrib.auth import authenticate, login
 from rest_framework import generics, permissions, status
@@ -141,12 +186,13 @@ def dashboard(request):
             {"label": "My Tickets", "value": request.user.tickets.count(), "tone": "primary"},
             {"label": "Open Tickets", "value": request.user.tickets.exclude(status="closed").count(), "tone": "warning"},
             {"label": "Pending Dues", "value": Payment.objects.filter(resident=request.user, status="pending").count(), "tone": "success"},
-            {"label": "Notices", "value": Notice.objects.count(), "tone": "info"},
+            {"label": "Family Members", "value": request.user.family_members.count(), "tone": "info"},
         ]
         quick_links = [
             {"title": "Pay Maintenance Dues", "subtitle": "View and clear pending maintenance charges.", "href": "/payments/dues/", "tone": "success"},
             {"title": "Create Ticket", "subtitle": "Raise a maintenance or support issue.", "href": "/tickets/create/", "tone": "primary"},
             {"title": "Payment History", "subtitle": "Check completed dues and receipts.", "href": "/payments/history/", "tone": "warning"},
+            {"title": "Family Details", "subtitle": "Add and review your household member records.", "href": "/family/", "tone": "info"},
         ]
 
     elif role == "security":
@@ -166,27 +212,30 @@ def dashboard(request):
     elif role == "staff":
         template = "accounts/staff_dashboard.html"
         assign_payment_form = AssignPaymentForm()
+        pending_total_amount = Payment.objects.filter(status="pending").aggregate(total=Sum("amount"))["total"] or 0
         stats = [
             {"label": "All Tickets", "value": Ticket.objects.count(), "tone": "primary"},
             {"label": "Open Tickets", "value": Ticket.objects.exclude(status="closed").count(), "tone": "warning"},
             {"label": "Pending Payments", "value": Payment.objects.filter(status="pending").count(), "tone": "success"},
-            {"label": "Active Notices", "value": Notice.objects.count(), "tone": "info"},
+            {"label": "Total Amount to Be Collected", "value": f"INR {pending_total_amount:,.0f}", "tone": "info"},
         ]
         quick_links = [
             {"title": "Manage Tickets", "subtitle": "Review and update society issues.", "href": "/tickets/all/", "tone": "primary"},
             {"title": "Create Notice", "subtitle": "Publish an announcement for residents.", "href": "/notices/create/", "tone": "info"},
             {"title": "Assign Payment", "subtitle": "Create a new due for a resident.", "href": "#assign-payment", "tone": "warning"},
             {"title": "Manage Payments", "subtitle": "Track pending and completed dues.", "href": "/payments/manage/", "tone": "warning"},
+            {"title": "Family Records", "subtitle": "Review resident family details by flat.", "href": "/family/manage/", "tone": "info"},
         ]
 
     else:
         template = "accounts/admin_dashboard.html"
         assign_payment_form = AssignPaymentForm()
+        pending_total_amount = Payment.objects.filter(status="pending").aggregate(total=Sum("amount"))["total"] or 0
         stats = [
             {"label": "Residents", "value": User.objects.filter(role="resident").count(), "tone": "primary"},
             {"label": "Open Tickets", "value": Ticket.objects.exclude(status="closed").count(), "tone": "warning"},
             {"label": "Visitors Today", "value": Visitor.objects.filter(entry_time__date=timezone.now().date()).count(), "tone": "success"},
-            {"label": "Pending Approvals", "value": User.objects.filter(role="resident", is_approved=False).count(), "tone": "info"},
+            {"label": "Total Amount to Be Collected", "value": f"INR {pending_total_amount:,.0f}", "tone": "info"},
         ]
         quick_links = [
             {"title": "Members", "subtitle": "Review registered users and resident approvals below.", "href": "#members-section", "tone": "primary"},
@@ -194,6 +243,7 @@ def dashboard(request):
             {"title": "Notices", "subtitle": "Create and manage notices for different audiences.", "href": "/notices/list/", "tone": "info"},
             {"title": "Assign Payment", "subtitle": "Create a new due for a resident.", "href": "#assign-payment", "tone": "warning"},
             {"title": "Payments", "subtitle": "Monitor dues collection and payment updates.", "href": "/payments/manage/", "tone": "warning"},
+            {"title": "Family Records", "subtitle": "Open resident family records grouped by flat.", "href": "/family/manage/", "tone": "info"},
         ]
         pending_residents = User.objects.filter(
             role="resident",

@@ -24,6 +24,10 @@
     Manage Payments
     <small>Update payment status and transaction details.</small>
 </a>
+<a href="/family/manage/">
+    Family Records
+    <small>Review resident household details by flat.</small>
+</a>
 {% endblock %}
 
 {% block side_panel_title %}Staff Priorities{% endblock %}
@@ -36,31 +40,60 @@
 </ul>
 {% endblock %}
 
+{% block extra_styles %}
+.assign-payment-grid .assign-cell {
+    display: grid;
+    gap: 0.45rem;
+}
+
+.assign-payment-grid .assign-submit {
+    display: flex;
+    align-items: end;
+}
+
+.assign-payment-grid label {
+    font-weight: 700;
+}
+
+.assign-payment-grid .form-control,
+.assign-payment-grid .form-select,
+.assign-payment-grid select,
+.assign-payment-grid input {
+    min-height: 48px;
+}
+
+@media (max-width: 991px) {
+    .assign-payment-grid .assign-submit {
+        align-items: stretch;
+    }
+}
+{% endblock %}
+
 {% block extra_content %}
 <section class="mt-3" id="assign-payment">
     <article class="surface-card">
         <h2 class="section-title mb-1">Assign Payment</h2>
         <p class="section-copy">Create a new maintenance due directly from the staff dashboard.</p>
-        <form method="post" action="{% url 'assign_payment' %}" class="row g-3">
+        <form method="post" action="{% url 'assign_payment' %}" class="row g-3 assign-payment-grid">
             {% csrf_token %}
             <input type="hidden" name="next" value="{% url 'dashboard' %}">
-            <div class="col-md-4">
+            <div class="col-lg-4 col-md-6 assign-cell">
                 {{ assign_payment_form.resident.label_tag }}
                 {{ assign_payment_form.resident }}
             </div>
-            <div class="col-md-3">
+            <div class="col-lg-3 col-md-6 assign-cell">
                 {{ assign_payment_form.month.label_tag }}
                 {{ assign_payment_form.month }}
             </div>
-            <div class="col-md-2">
+            <div class="col-lg-2 col-md-6 assign-cell">
                 {{ assign_payment_form.year.label_tag }}
                 {{ assign_payment_form.year }}
             </div>
-            <div class="col-md-3">
+            <div class="col-lg-3 col-md-6 assign-cell">
                 {{ assign_payment_form.amount.label_tag }}
                 {{ assign_payment_form.amount }}
             </div>
-            <div class="col-12">
+            <div class="col-12 assign-submit">
                 <button type="submit" class="btn btn-primary">Assign Due</button>
             </div>
         </form>

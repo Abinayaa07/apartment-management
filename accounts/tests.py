@@ -1,8 +1,14 @@
 from django.test import TestCase
+from django.test import override_settings
 from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
+import shutil
+import tempfile
 
-from .models import User
+from .models import FamilyMember, User
+
+
+TEMP_MEDIA_ROOT = tempfile.mkdtemp()
 
 
 class DashboardViewTests(TestCase):
@@ -52,7 +58,13 @@ class DashboardViewTests(TestCase):
         self.assertTemplateUsed(response, "accounts/staff_dashboard.html")
 
 
+@override_settings(MEDIA_ROOT=TEMP_MEDIA_ROOT)
 class RegistrationDocumentTests(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(TEMP_MEDIA_ROOT, ignore_errors=True)
+        super().tearDownClass()
+
     def test_resident_registration_requires_documents(self):
         response = self.client.post(
             reverse("register"),
@@ -143,3 +155,60 @@ class DashboardApprovalTests(TestCase):
         self.assertRedirects(response, reverse("dashboard"))
         resident.refresh_from_db()
         self.assertFalse(resident.is_approved)
+
+
+class FamilyDetailsTests(TestCase):
+    def test_resident_can_add_own_family_member(self):
+        resident = User.objects.create_user(
+            username="resident_family",
+            password="testpass123",
+            role="resident",
+            phone="1212121212",
+            flat_number="A-101",
+            is_approved=True,
+        )
+
+        self.client.force_login(resident)
+        response = self.client.post(
+            reverse("my_family_details"),
+            {
+                "member_name": "Ravi Kumar",
+                "gender": "male",
+                "relationship": "Brother",
+                "date_of_birth": "2000-05-10",
+            },
+        )
+
+        self.assertRedirects(response, reverse("my_family_details"))
+        self.assertEqual(resident.family_members.count(), 1)
+
+    def test_staff_can_view_family_records(self):
+        staff_user = User.objects.create_user(
+            username="staff_family",
+            password="testpass123",
+            role="staff",
+            phone="3434343434",
+            is_approved=True,
+        )
+        resident = User.objects.create_user(
+            username="resident_family_view",
+            password="testpass123",
+            role="resident",
+            phone="5656565656",
+            flat_number="B-202",
+            is_approved=True,
+        )
+        FamilyMember.objects.create(
+            resident=resident,
+            member_name="Anita",
+            gender="female",
+            relationship="Mother",
+            date_of_birth="1982-04-08",
+        )
+
+        self.client.force_login(staff_user)
+        response = self.client.get(reverse("manage_family_details"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "B-202")
+        self.assertContains(response, "Anita")

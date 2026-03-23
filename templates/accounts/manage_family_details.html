@@ -1,0 +1,77 @@
+{% extends "base/page_base.html" %}
+
+{% block title %}Family Records{% endblock %}
+{% block kicker %}Resident Records{% endblock %}
+{% block heading %}Family Records by Flat{% endblock %}
+{% block intro %}Staff and admin can review resident household details, member relationships, age, and KYC documents flat by flat.{% endblock %}
+
+{% block top_actions %}
+<a href="/dashboard/" class="btn btn-outline-secondary">Dashboard</a>
+{% endblock %}
+
+{% block content %}
+{% if residents %}
+    <div class="stack-list">
+        {% for resident in residents %}
+            <article class="item-card">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                    <div>
+                        <h4>{{ resident.username }}</h4>
+                        <div class="muted-note">
+                            Flat: {{ resident.block_name|default:"-" }} {{ resident.flat_number|default:"-" }} |
+                            Phone: {{ resident.phone|default:"-" }} |
+                            Email: {{ resident.email|default:"No email" }}
+                        </div>
+                    </div>
+                    <span class="status-pill {% if resident.is_approved %}status-paid{% else %}status-pending{% endif %}">
+                        {% if resident.is_approved %}Approved{% else %}Pending{% endif %}
+                    </span>
+                </div>
+
+                {% if resident.family_members.all %}
+                    <div class="table-responsive">
+                        <table class="table align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Member Name</th>
+                                    <th>Gender</th>
+                                    <th>Relationship</th>
+                                    <th>Date of Birth</th>
+                                    <th>Age</th>
+                                    <th>KYC Document</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for member in resident.family_members.all %}
+                                    <tr>
+                                        <td><strong>{{ member.member_name }}</strong></td>
+                                        <td>{{ member.get_gender_display }}</td>
+                                        <td>{{ member.relationship }}</td>
+                                        <td>{{ member.date_of_birth|date:"d M Y" }}</td>
+                                        <td>{{ member.age }}</td>
+                                        <td>
+                                            {% if member.kyc_document %}
+                                                <a href="{{ member.kyc_document.url }}" target="_blank" rel="noopener">View KYC</a>
+                                            {% else %}
+                                                <span class="text-muted">Not uploaded</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        No family details have been added for this flat yet.
+                    </div>
+                {% endif %}
+            </article>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty-state">
+        No residents found yet.
+    </div>
+{% endif %}
+{% endblock %}

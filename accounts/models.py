@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -22,6 +23,40 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-    
+
+
+class FamilyMember(models.Model):
+    GENDER_CHOICES = (
+        ("male", "Male"),
+        ("female", "Female"),
+        ("other", "Other"),
+    )
+
+    resident = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="family_members",
+        limit_choices_to={"role": "resident"},
+    )
+    member_name = models.CharField(max_length=120)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    relationship = models.CharField(max_length=50)
+    date_of_birth = models.DateField()
+    kyc_document = models.FileField(upload_to="resident_docs/family_kyc/", null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["member_name"]
+
+    def __str__(self):
+        return f"{self.member_name} ({self.resident.username})"
+
+    @property
+    def age(self):
+        today = timezone.localdate()
+        years = today.year - self.date_of_birth.year
+        if (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day):
+            years -= 1
+        return years
 
 

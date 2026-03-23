@@ -1,8 +1,14 @@
 {% extends "base/auth_base.html" %}
 
 {% block title %}Register{% endblock %}
-{% block heading %}Register{% endblock %}
-{% block subheading %}Create your account for AMS Apartment.{% endblock %}
+{% block heading %}Create Account{% endblock %}
+{% block subheading %}Join AMS Apartment and complete your resident or staff profile.{% endblock %}
+
+{% block auth_extra_styles %}
+.auth-wrap {
+    width: min(620px, 100%);
+}
+{% endblock %}
 
 {% block content %}
 <form method="POST" enctype="multipart/form-data" class="d-grid gap-3">
@@ -69,7 +75,7 @@
         <span class="helptext password-help">{{ form.password2.help_text|safe }}</span>
         {{ form.password2.errors }}
     </p>
-    <button class="btn btn-brand">Register</button>
+    <button class="btn btn-brand">Create Account</button>
     <div class="auth-linkline">Already have an account? <a href="/login/">Login</a></div>
 </form>
 <script>

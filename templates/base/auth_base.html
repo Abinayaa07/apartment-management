@@ -6,77 +6,88 @@
     <title>{% block title %}Authentication{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        :root {
+            --auth-indigo: #5b6df9;
+            --auth-purple: #8b5cf6;
+            --auth-pink: #d946ef;
+            --auth-card: #ffffff;
+            --auth-text: #1f2937;
+            --auth-muted: #6b7280;
+            --auth-border: rgba(99, 102, 241, 0.14);
+        }
+
         body {
             min-height: 100vh;
             margin: 0;
-            color: #f8fafc;
             background:
-                linear-gradient(rgba(46, 16, 101, 0.42), rgba(26, 10, 62, 0.62)),
-                url("https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1600&q=80") center/cover no-repeat fixed;
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.16) 0, rgba(255, 255, 255, 0.16) 12%, transparent 12.5%),
+                radial-gradient(circle at bottom right, rgba(255, 255, 255, 0.16) 0, rgba(255, 255, 255, 0.16) 10%, transparent 10.5%),
+                linear-gradient(135deg, #6d87ff 0%, #7a62d8 48%, #8a5bd0 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
             position: relative;
+            overflow-x: hidden;
         }
 
         body::before {
             content: "";
             position: absolute;
             inset: 0;
-            background-image:
-                radial-gradient(circle, rgba(255,255,255,0.85) 1px, transparent 1.5px),
-                radial-gradient(circle, rgba(255,255,255,0.55) 1px, transparent 1.5px);
-            background-size: 34px 34px, 54px 54px;
-            background-position: 0 0, 12px 12px;
-            opacity: 0.28;
+            background:
+                radial-gradient(circle at 4% 18%, rgba(255,255,255,0.11) 0, rgba(255,255,255,0.11) 11%, transparent 11.5%),
+                radial-gradient(circle at 92% 78%, rgba(255,255,255,0.12) 0, rgba(255,255,255,0.12) 10%, transparent 10.5%),
+                radial-gradient(circle at 18% 88%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 7%, transparent 7.5%);
             pointer-events: none;
         }
 
         .auth-wrap {
             position: relative;
             z-index: 1;
-            width: min(460px, 100%);
+            width: min(500px, 100%);
         }
 
         .brand-strip {
             text-align: center;
-            margin-bottom: 1rem;
+            margin-bottom: 1.15rem;
         }
 
         .brand-kicker {
             text-transform: uppercase;
-            letter-spacing: 0.24em;
-            font-size: 0.76rem;
-            color: rgba(248, 250, 252, 0.76);
-            margin-bottom: 0.45rem;
+            letter-spacing: 0.28em;
+            font-size: 0.72rem;
+            color: rgba(255, 255, 255, 0.78);
+            margin-bottom: 0.35rem;
         }
 
         .brand-name {
             font-size: 1rem;
-            color: rgba(248, 250, 252, 0.92);
+            color: rgba(255, 255, 255, 0.96);
+            font-weight: 500;
         }
 
         .auth-card {
-            padding: 2.35rem 2rem;
-            border-radius: 1.6rem;
-            background: linear-gradient(180deg, rgba(156, 72, 214, 0.38), rgba(74, 24, 141, 0.38));
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            box-shadow: 0 24px 55px rgba(24, 10, 52, 0.34);
-            backdrop-filter: blur(16px);
+            padding: 2.4rem 2.2rem 2rem;
+            border-radius: 2rem;
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.72);
+            box-shadow: 0 28px 80px rgba(49, 46, 129, 0.28);
+            backdrop-filter: blur(10px);
         }
 
         .auth-title {
             text-align: center;
-            font-size: 2.25rem;
+            font-size: 2.4rem;
             font-weight: 700;
-            margin-bottom: 0.45rem;
+            margin-bottom: 0.35rem;
+            color: #7c3aed;
         }
 
         .auth-subtitle {
             text-align: center;
-            color: rgba(248, 250, 252, 0.8);
-            margin-bottom: 1.5rem;
+            color: var(--auth-muted);
+            margin-bottom: 1.7rem;
         }
 
         .form-control,
@@ -87,12 +98,13 @@
         input[type="email"],
         input[type="file"],
         select {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: #ffffff;
+            border: 1px solid #dbe3f2;
             border-radius: 999px;
-            color: #fff;
+            color: var(--auth-text);
             padding: 0.9rem 1rem;
             width: 100%;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
         }
 
         textarea {
@@ -101,7 +113,7 @@
         }
 
         .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.68);
+            color: #9ca3af;
         }
 
         .form-select option,
@@ -112,17 +124,17 @@
 
         .form-control:focus,
         .form-select:focus {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.12);
+            background: #ffffff;
+            color: var(--auth-text);
+            border-color: rgba(99, 102, 241, 0.55);
+            box-shadow: 0 0 0 0.24rem rgba(99, 102, 241, 0.14);
         }
 
         .form-label,
         .helptext,
         .auth-meta,
         .auth-linkline {
-            color: rgba(248, 250, 252, 0.82);
+            color: var(--auth-muted);
         }
 
         .helptext {
@@ -130,7 +142,7 @@
         }
 
         .auth-card ul {
-            color: rgba(248, 250, 252, 0.82);
+            color: var(--auth-muted);
             padding-left: 1.2rem;
         }
 
@@ -142,28 +154,30 @@
             display: block;
             margin-bottom: 0.4rem;
             font-weight: 600;
+            color: var(--auth-text);
         }
 
         .auth-card form ul.errorlist {
             margin: 0 0 0.45rem;
             padding-left: 1rem;
-            color: #fecaca;
+            color: #dc2626;
             font-size: 0.88rem;
         }
 
         .btn-brand {
             width: 100%;
-            border-radius: 999px;
-            padding: 0.9rem 1rem;
-            background: #ffffff;
-            color: #1f2937;
+            border-radius: 1rem;
+            padding: 0.92rem 1rem;
+            background: linear-gradient(135deg, var(--auth-indigo), #4f46e5);
+            color: #ffffff;
             border: none;
             font-weight: 600;
+            box-shadow: 0 14px 26px rgba(79, 70, 229, 0.26);
         }
 
         .btn-brand:hover {
-            background: #f3f4f6;
-            color: #111827;
+            background: linear-gradient(135deg, #5165fb, #4338ca);
+            color: #ffffff;
         }
 
         .alert {
@@ -178,7 +192,7 @@
         }
 
         .auth-linkline a {
-            color: #fff;
+            color: #6d28d9;
             font-weight: 700;
             text-decoration: none;
         }
@@ -192,6 +206,8 @@
                 padding: 1.8rem 1.2rem;
             }
         }
+
+        {% block auth_extra_styles %}{% endblock %}
     </style>
 </head>
 <body>
@@ -217,5 +233,6 @@
     </section>
 </div>
 {% include "includes/faq_chatbot.html" %}
+{% block auth_extra_scripts %}{% endblock %}
 </body>
 </html>
